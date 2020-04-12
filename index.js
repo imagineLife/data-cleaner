@@ -18,18 +18,18 @@ const jsonParseFile = (fileStr) => {
 		}
 
 		lineReader.on('line', function (line) {
-				let lineSplit = line.split(',');
+				let csvArr = line.split('\t');
+				
 				if(resData.rows === 0){
 					resData.rows = resData.rows + 1;
-					resData.columns = lineSplit.length
+					resData.columns = csvArr.length
 					return;	
 				}
 				if(resData.rows === 1){
-					console.log('csv Header')
-					resData.header = lineSplit
+					resData.header = csvArr
 				}
 				resData.rows = resData.rows + 1;
-				resData.data.push(lineSplit)
+				resData.data.push(csvArr)
 		});
 
 		lineReader.on('close', () => {
@@ -81,20 +81,35 @@ const filterColumnsByString = (nestedArr, str) => {
 		resArr.push(thisRowArr)
 	})
 	
-return resArr
+	return resArr
 }
 
-jsonParseFile('./data/src.csv').then(fileData => {
-	// console.log('---columns----')
-	// console.log(fileData.columns)
-	// console.log('----header----');
-	// console.log(fileData.header)
-	// console.log('rows')
-	// console.log(fileData.rows)
+const makeIntoCSV = (nestedArr) => {
+	let resStr = ''
+	nestedArr.forEach(row => {
+		let thisRowStr = ''
+		row.forEach((rowCell, cellIdx) => {
+			if(cellIdx !== row.length - 1){
+				thisRowStr = thisRowStr + rowCell + ','
+			}else{
+				thisRowStr = thisRowStr + rowCell + '\n'
+			}
+		})
+		resStr = resStr += thisRowStr
+	})
+	return resStr
+}
 
+jsonParseFile('./data/src.tsv').then(fileData => {
 	let filteredData = filterColumnsByString(fileData.data, 'Margin')
 	let refiltered = filterColumnsByString(filteredData, 'UNRELATED')
-	console.log('refiltered')
-	console.log(refiltered)
 	
+	let reMergedData = makeIntoCSV(refiltered)
+	console.log('reMergedData')
+	console.log(reMergedData)
+	
+	fs.writeFile('cleaned.csv', reMergedData, (err) => {
+		console.log('err')
+		console.log(err)
+	})
 })
