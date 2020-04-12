@@ -21,12 +21,11 @@ const jsonParseFile = (fileStr) => {
 				let csvArr = line.split('\t');
 				if(resData.rows === 0){
 					resData.rows = resData.rows + 1;
-					resData.columns = csvArr.length
 					return;	
 				}
 				if(resData.rows === 1){
 					csvArr.forEach((txt, txtIdx) => {
-						csvArr[txtIdx] = txt.replace('Estimate!!', '')
+						csvArr[txtIdx] = txt.replace('Estimate!!', '').replace('Population for whom poverty status is determined', '')
 					})
 					resData.header = csvArr
 				}
@@ -88,9 +87,14 @@ const filterColumnsByString = (nestedArr, str) => {
 
 const makeIntoCSV = (nestedArr) => {
 	let resStr = ''
-	nestedArr.forEach(row => {
+	let columns = 0
+	nestedArr.forEach((row, rowIdx) => {
 		let thisRowStr = ''
 		row.forEach((rowCell, cellIdx) => {
+			if(rowIdx === 0){
+				columns = columns + 1;
+			}
+
 			if(cellIdx !== row.length - 1){
 				thisRowStr = thisRowStr + rowCell + ','
 			}else{
@@ -106,12 +110,14 @@ jsonParseFile('./data/src.tsv').then(fileData => {
 	let filteredData = filterColumnsByString(fileData.data, 'Margin')
 	let refiltered = filterColumnsByString(filteredData, 'UNRELATED')
 	
-	let reMergedData = makeIntoCSV(refiltered)
-	// console.log('reMergedData')
-	// console.log(reMergedData)
+	fileData.data = makeIntoCSV(refiltered)
 	
-	fs.writeFile('cleaned.csv', reMergedData, (err) => {
-		// console.log('err')
-		// console.log(err)
+	
+	fs.writeFile('cleaned.csv', fileData.data, (err) => {
+		if(err){
+			console.log('err')
+			console.log(err)
+		}
+		return;
 	})
 })
