@@ -25,7 +25,11 @@ const jsonParseFile = (fileStr) => {
 				}
 				if(resData.rows === 1){
 					csvArr.forEach((txt, txtIdx) => {
-						csvArr[txtIdx] = txt.replace('Estimate!!', '').replace('Population for whom poverty status is determined', '')
+						csvArr[txtIdx] = txt
+							.replace('Estimate!!', '')
+							.replace('Population for whom poverty status is determined', '')
+							.replace('!!!!', ': ')
+							.replace('!!', ': ')
 					})
 					resData.header = csvArr
 				}
@@ -88,6 +92,7 @@ const filterColumnsByString = (nestedArr, str) => {
 const makeIntoCSV = (nestedArr) => {
 	let resStr = ''
 	let columns = 0
+	let rows = 0
 	nestedArr.forEach((row, rowIdx) => {
 		let thisRowStr = ''
 		row.forEach((rowCell, cellIdx) => {
@@ -101,8 +106,14 @@ const makeIntoCSV = (nestedArr) => {
 				thisRowStr = thisRowStr + rowCell + '\n'
 			}
 		})
+		rows = rows + 1;
 		resStr = resStr += thisRowStr
 	})
+
+	console.log('columns')
+	console.log(columns)
+	console.log('rows')
+	console.log(rows)
 	return resStr
 }
 
