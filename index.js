@@ -28,8 +28,8 @@ const jsonParseFile = (fileStr) => {
 						csvArr[txtIdx] = txt
 							.replace('Estimate!!', '')
 							.replace('Population for whom poverty status is determined', '')
-							.replace('!!!!', ': ')
-							.replace('!!', ': ')
+							.replace('!!!!', ':')
+							.replace('!!', ':')
 					})
 					resData.header = csvArr
 				}
@@ -100,10 +100,11 @@ const makeIntoCSV = (nestedArr) => {
 				columns = columns + 1;
 			}
 
+			let rowAndThisCell = thisRowStr + rowCell
 			if(cellIdx !== row.length - 1){
-				thisRowStr = thisRowStr + rowCell + ','
+				thisRowStr =  rowAndThisCell.trim() + ','
 			}else{
-				thisRowStr = thisRowStr + rowCell + '\n'
+				thisRowStr = rowAndThisCell.trim() + '\n'
 			}
 		})
 		rows = rows + 1;
