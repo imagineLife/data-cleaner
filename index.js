@@ -19,13 +19,15 @@ const jsonParseFile = (fileStr) => {
 
 		lineReader.on('line', function (line) {
 				let csvArr = line.split('\t');
-				
 				if(resData.rows === 0){
 					resData.rows = resData.rows + 1;
 					resData.columns = csvArr.length
 					return;	
 				}
 				if(resData.rows === 1){
+					csvArr.forEach((txt, txtIdx) => {
+						csvArr[txtIdx] = txt.replace('Estimate!!', '')
+					})
 					resData.header = csvArr
 				}
 				resData.rows = resData.rows + 1;
@@ -105,11 +107,11 @@ jsonParseFile('./data/src.tsv').then(fileData => {
 	let refiltered = filterColumnsByString(filteredData, 'UNRELATED')
 	
 	let reMergedData = makeIntoCSV(refiltered)
-	console.log('reMergedData')
-	console.log(reMergedData)
+	// console.log('reMergedData')
+	// console.log(reMergedData)
 	
 	fs.writeFile('cleaned.csv', reMergedData, (err) => {
-		console.log('err')
-		console.log(err)
+		// console.log('err')
+		// console.log(err)
 	})
 })
